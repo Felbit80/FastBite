@@ -2,16 +2,26 @@ import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, Image } from "react-native";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
-import { useNavigation } from "@react-navigation/native";
-
-const customFonts = {
-  "BeVietnamPro-Semibold": require("../assets/fonts/BeVietnamPro-SemiBold.ttf"),
+import { useFonts } from "expo-font";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import AppLoading from "expo-app-loading";
+type RootStackParamList = {
+  Home: undefined;
 };
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const [fontsLoaded] = useFonts({
+    "BeVietnamPro-Semibold": require("../assets/fonts/BeVietnamPro-SemiBold.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
   const handleLogin = async () => {
     if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
@@ -31,7 +41,7 @@ export default function Login() {
       const matchedUser = users.find((user: any) => user.email === email && user.senha === password);
 
       if (matchedUser) {
-        alert("Login Válido");
+        navigation.navigate("Home");
       } else {
         alert("Email ou senha incorretos.");
       }
@@ -43,8 +53,6 @@ export default function Login() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" backgroundColor="#f8f9fa" />
-
       <View style={styles.content}>
         {/* Logo e título */}
         <View style={styles.header}>
@@ -92,9 +100,7 @@ export default function Login() {
                 <Image
                   style={styles.iconShowPassword}
                   source={
-                    showPassword
-                      ? require("../assets/imgs/iconPasswordVisible.png")
-                      : require("../assets/imgs/iconPasswordInvisible.png")
+                    showPassword ? require("../assets/imgs/iconPasswordVisible.png") : require("../assets/imgs/iconPasswordInvisible.png")
                   }
                 />
               </TouchableOpacity>
@@ -102,12 +108,12 @@ export default function Login() {
           </View>
 
           {/* Link Esqueceu senha */}
-          <TouchableOpacity activeOpacity={.8}>
+          <TouchableOpacity activeOpacity={0.8}>
             <Text style={[styles.forgotPassword, styles.baseText]}>Esqueceu sua senha?</Text>
           </TouchableOpacity>
 
           {/* Botão de Login */}
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin} activeOpacity={.8}>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin} activeOpacity={0.8}>
             <Text style={[styles.loginButtonText, styles.baseText]}>Logar </Text>
           </TouchableOpacity>
         </View>
@@ -122,7 +128,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "fff",
+    backgroundColor: "FFFFFF",
   },
   content: {
     flex: 1,
@@ -136,7 +142,6 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: scale(80),
     height: scale(80),
-    backgroundColor: "#FF6600",
     borderRadius: scale(20),
     justifyContent: "center",
     alignItems: "center",
@@ -206,7 +211,7 @@ const styles = StyleSheet.create({
   iconShowPassword: {
     opacity: 100,
     height: verticalScale(30),
-    width: scale(30)
+    width: scale(30),
   },
   forgotPassword: {
     color: "#FF6600",
