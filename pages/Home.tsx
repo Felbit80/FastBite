@@ -37,7 +37,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [currentLocation, setCurrentLocation] = useState<string>("R. Rio Branco");
   const [locationLoading, setLocationLoading] = useState(true);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const [fontsLoaded] = useFonts({
     "BeVietnamPro-Semibold": require("../assets/fonts/BeVietnamPro-SemiBold.ttf"),
@@ -54,7 +54,7 @@ export default function Home() {
       if (status !== "granted") {
         Alert.alert("Permissão negada", "Para uma melhor experiência, permita o acesso à localização.", [
           { text: "OK", onPress: () => setLocationLoading(false) },
-        ]);
+        ]); 
         return;
       }
 

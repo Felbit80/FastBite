@@ -3,8 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image, ScrollVi
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import { useFonts } from "expo-font";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import * as Location from "expo-location";
-import AppLoading from "expo-app-loading";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RootStackParamList = {
   Home: undefined;
@@ -15,7 +14,27 @@ export default function Search() {
   const [loading, setLoading] = useState(true);
   const [currentLocation, setCurrentLocation] = useState<string>("R. Rio Branco");
   const [locationLoading, setLocationLoading] = useState(true);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await AsyncStorage.getItem("user");
+        if (userData) {
+          setUser(JSON.parse(userData));
+        }
+      } catch (error) {
+        console.error("Erro ao carregar dados do usuário:", error);
+        setError("Erro ao carregar o perfil.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   const [fontsLoaded] = useFonts({
     "BeVietnamPro-Semibold": require("../assets/fonts/BeVietnamPro-SemiBold.ttf"),
@@ -33,7 +52,25 @@ export default function Search() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}></ScrollView>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {loading ? (
+          <Text style={[styles.baseText, { textAlign: "center", marginTop: 20 }]}>Carregando...</Text>
+        ) : error ? (
+          <Text style={[styles.baseText, { color: "red", textAlign: "center", marginTop: 20 }]}>{error}</Text>
+        ) : (
+          user && (
+            <View style={{ padding: scale(20), alignItems: "center" }}>
+              <Image
+                source={require("../assets/imgs/iconProfile.png")}
+                style={{ width: 100, height: 100, borderRadius: 50, marginBottom: 16 }}
+              />
+              <Text style={[styles.baseText, { fontSize: 22, marginBottom: 8 }]}>{user.name}</Text>
+              <Text style={[styles.baseText, { fontSize: 16, color: "#666", marginBottom: 8 }]}>{user.email}</Text>
+              <Text style={[styles.baseText, { fontSize: 18, color: "#FF6600" }]}>Saldo: R$ {Number(user.saldo).toFixed(2)}</Text>
+            </View>
+          )
+        )}
+      </ScrollView>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>

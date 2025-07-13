@@ -5,6 +5,8 @@ import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import { useFonts } from "expo-font";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import AppLoading from "expo-app-loading";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 type RootStackParamList = {
   Home: undefined;
 };
@@ -41,6 +43,7 @@ export default function Login() {
       const matchedUser = users.find((user: any) => user.email === email && user.senha === password);
 
       if (matchedUser) {
+        await AsyncStorage.setItem("user", JSON.stringify(matchedUser));
         navigation.navigate("Home");
       } else {
         alert("Email ou senha incorretos.");
