@@ -161,8 +161,9 @@ export default function Home() {
           </View>
           <View style={styles.dishActions}>
             <TouchableOpacity style={styles.orderButton}>
-              style={styles.orderButton}
               onPress={() => navigation.navigate('OrderForm', { item, type: 'product' })}
+            >
+              <Text style={[styles.orderButtonText, styles.baseText]}>Pedir</Text>
             </TouchableOpacity>
             <TouchableOpacity>
               <Text style={[styles.addToCartText, styles.baseText]}>Adicionar à sacola</Text>
