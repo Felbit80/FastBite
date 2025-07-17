@@ -9,6 +9,9 @@ import AppLoading from "expo-app-loading";
 type RootStackParamList = {
   Home: undefined;
   Profile: undefined;
+  RestaurantDetail: { restaurantId: number };
+  ProductDetail: { productId: number };
+  OrderForm: { item: any; type: 'restaurant' | 'product' };
 };
 
 type Restaurant = {
@@ -105,7 +108,17 @@ export default function Search() {
   }, []);
 
 const renderRestaurantCard = ({ item }: { item: Restaurant | Dish }) => (
-    <TouchableOpacity style={styles.restaurantCard} key={item.id}>
+    <TouchableOpacity 
+      style={styles.restaurantCard} 
+      key={item.id}
+      onPress={() => {
+        if ('price' in item) {
+          navigation.navigate('ProductDetail', { productId: item.id });
+        } else {
+          navigation.navigate('RestaurantDetail', { restaurantId: item.id });
+        }
+      }}
+    >
       <Image source={{ uri: item.image }} style={styles.restaurantImage} />
       <View style={styles.restaurantInfo}>
         <Text style={[styles.restaurantName, styles.baseText]}>{item.name}</Text>
